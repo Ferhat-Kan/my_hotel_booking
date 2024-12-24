@@ -159,8 +159,7 @@ def update_user(
 @router.delete("/{user_id}")
 async def delete_user(
     user_id: int, 
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_admin)
+    db: Session = Depends(get_db)
 ):
     user_to_delete = db.query(models.User).filter(models.User.id == user_id).first()
     if user_to_delete is None:
