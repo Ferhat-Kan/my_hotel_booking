@@ -11,4 +11,5 @@ class User(Base):
     hashed_password = Column(String(100))
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, server_default='false')
-    comments = relationship("Comment", back_populates="user") 
+    comments = relationship("Comment", back_populates="user")
+    bookings = relationship("Booking", back_populates="user")

@@ -4,7 +4,8 @@ from typing import Optional
 from .room import Room
 
 class BookingBase(BaseModel):
-    room_id: int
+    user_id: int
+    rom_id: int
     guest_name: str
     check_in_date: date
     check_out_date: date
