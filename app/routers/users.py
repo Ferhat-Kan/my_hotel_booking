@@ -155,3 +155,17 @@ def update_user(
     db.commit()
     db.refresh(db_user)
     return db_user 
+
+@router.delete("/{user_id}")
+async def delete_user(
+    user_id: int, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_admin)
+):
+    user_to_delete = db.query(models.User).filter(models.User.id == user_id).first()
+    if user_to_delete is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    db.delete(user_to_delete)
+    db.commit()
+    return {"message": "User deleted successfully"} 
