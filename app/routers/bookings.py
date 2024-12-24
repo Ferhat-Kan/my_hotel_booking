@@ -5,6 +5,7 @@ from datetime import date
 from ..database import SessionLocal
 from .. import models
 from ..schemas.booking import Booking, BookingCreate
+from ..routers.users import get_current_user  # Kullanıcı doğrulaması için ekleme
 
 router = APIRouter(
     prefix="/bookings",
@@ -95,3 +96,21 @@ def cancel_booking(booking_id: int, db: Session = Depends(get_db)):
     booking.status = "cancelled"
     db.commit()
     return {"message": "Booking cancelled successfully"} 
+
+@router.delete("/{booking_id}")
+def delete_booking(
+    booking_id: int, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)  # Kullanıcı doğrulaması
+):
+    booking = db.query(models.Booking).filter(models.Booking.id == booking_id).first()
+    if booking is None:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Kullanıcının rezervasyonu iptal etme yetkisi olup olmadığını kontrol et
+    if booking.guest_name != current_user.full_name and not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this booking")
+    
+    db.delete(booking)
+    db.commit()
+    return {"message": "Booking deleted successfully"} 
