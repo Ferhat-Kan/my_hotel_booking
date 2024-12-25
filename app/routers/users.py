@@ -139,10 +139,10 @@ async def read_users(
 @router.put("/me", response_model=User)
 def update_user(
     user_update: UserCreate,
-    current_user: User = Depends(oauth2_scheme),
+    current_user: models.User = Depends(get_current_user),  # Corrected line
     db: Session = Depends(get_db)
 ):
-    db_user = db.query(models.User).filter(models.User.email == current_user).first()
+    db_user = db.query(models.User).filter(models.User.email == current_user.email).first()  # Corrected line
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     
@@ -154,7 +154,7 @@ def update_user(
     
     db.commit()
     db.refresh(db_user)
-    return db_user 
+    return db_user
 
 @router.delete("/{user_id}")
 async def delete_user(
@@ -167,4 +167,4 @@ async def delete_user(
     
     db.delete(user_to_delete)
     db.commit()
-    return {"message": "User deleted successfully"} 
+    return {"message": "User deleted successfully"}

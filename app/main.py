@@ -28,6 +28,7 @@ app.include_router(bookings.router)   # /bookings - Rezervasyon işlemleri
 app.include_router(payments.router)   # /payments - Ödeme işlemleri
 app.include_router(comments.router)   # /comments - Yorum işlemleri
 
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Hotel Booking API"} 
