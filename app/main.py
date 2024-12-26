@@ -9,12 +9,24 @@ from .routers import (
 )
 from . import models
 from .database import engine
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create FastAPI instance
 app = FastAPI(
     title="Hotel Booking API",
     description="A simple hotel booking API",
     version="1.0.0"
+)
+
+
+
+# CORS middleware ayarı
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Herhangi bir origin'e izin verir
+    allow_credentials=True,
+    allow_methods=["*"],  # Herhangi bir HTTP metoduna izin verir
+    allow_headers=["*"],  # Herhangi bir header'a izin verir
 )
 
 # Create database tables
