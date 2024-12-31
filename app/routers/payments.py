@@ -24,15 +24,9 @@ def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
     
-    # Check if payment already exists for this booking
-    existing_payment = db.query(models.Payment).filter(
-        models.Payment.booking_id == payment.booking_id
-    ).first()
-    if existing_payment:
-        raise HTTPException(
-            status_code=400,
-            detail="Payment already exists for this booking"
-        )
+    # Allow payment creation without a specific method
+    if not payment.payment_method:
+        payment.payment_method = "none"  # Default value or logic to handle no payment method
     
     # Create payment
     db_payment = models.Payment(**payment.dict())

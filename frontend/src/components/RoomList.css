@@ -1,0 +1,16 @@
+.room-card {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.room-title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.room-description {
+    color: #555;
+} 

@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 from fastapi import APIRouter, Depends, HTTPException, status
+=======
+from fastapi import APIRouter, Depends, HTTPException, Query
+>>>>>>> 9cbd3427 (Update .gitignore to exclude unnecessary files)
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from ..database import SessionLocal
 from .. import models
 from ..schemas.hotel import Hotel, HotelCreate
@@ -35,8 +39,11 @@ def create_hotel(hotel: HotelCreate, db: Session = Depends(get_db)):
 
 # Get a list of hotels with optional pagination
 @router.get("/", response_model=List[Hotel])
-def read_hotels(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    hotels = db.query(models.Hotel).offset(skip).limit(limit).all()
+def get_hotels(location: Optional[str] = Query(None), skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    if location:
+        hotels = db.query(models.Hotel).filter(models.Hotel.location.ilike(f"%{location}%")).offset(skip).limit(limit).all()
+    else:
+        hotels = db.query(models.Hotel).offset(skip).limit(limit).all()
     return hotels
 
 # Get details of a single hotel by ID

@@ -1,0 +1,17 @@
+.booking-form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.booking-input {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.booking-button {
+    width: 100%;
+} 

@@ -1,0 +1,9 @@
+# Örnek .gitignore
+node_modules/
+*.log
+*.tmp
+dist/
+build/
+.vscode/
+.DS_Store
+.env

@@ -4,18 +4,18 @@ from sqlalchemy.orm import Session
 from typing import List
 from ..database import SessionLocal
 from .. import models
-from ..schemas.user import User, UserCreate, UserLogin, Token
+from ..schemas.user import User, UserCreate, Token
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import os
 import logging
 
-# Logging ayarları
+# Logging settings
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# JWT ayarları
+# JWT settings
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -66,15 +66,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credentials_exception
 
     user = db.query(models.User).filter(models.User.email == email).first()
-    logger.debug(f"Found user: {user.email}, is_admin: {user.is_admin}")
     if user is None:
+        logger.error("User not found after decoding token")
         raise credentials_exception
+    logger.debug(f"Authenticated user: {user.email}")
     return user
 
 async def get_current_admin(current_user: models.User = Depends(get_current_user)):
-    logger.debug(f"Checking admin privileges for user: {current_user.email}")
     if not current_user.is_admin:
-        logger.warning(f"User {current_user.email} attempted to access admin endpoint")
+        logger.warning(f"Unauthorized admin access attempt by user: {current_user.email}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="The user doesn't have enough privileges"
@@ -86,6 +86,7 @@ async def get_current_admin(current_user: models.User = Depends(get_current_user
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
+        logger.error("Attempt to register with already existing email")
         raise HTTPException(status_code=400, detail="Email already registered")
     
     hashed_password = get_password_hash(user.password)
@@ -98,12 +99,14 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    logger.debug(f"User registered successfully: {db_user.email}")
     return db_user
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
     if not user:
+        logger.debug("Login failed: User not found")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -111,6 +114,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         )
     
     if not verify_password(form_data.password, user.hashed_password):
+        logger.debug("Login failed: Password verification failed")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -139,11 +143,16 @@ async def read_users(
 @router.put("/me", response_model=User)
 def update_user(
     user_update: UserCreate,
+<<<<<<< HEAD
     current_user: models.User = Depends(get_current_user),  # Corrected line
+=======
+    current_user: str = Depends(oauth2_scheme),
+>>>>>>> 9cbd3427 (Update .gitignore to exclude unnecessary files)
     db: Session = Depends(get_db)
 ):
     db_user = db.query(models.User).filter(models.User.email == current_user.email).first()  # Corrected line
     if db_user is None:
+        logger.error("Update failed: User not found")
         raise HTTPException(status_code=404, detail="User not found")
     
     # Update user information
@@ -154,7 +163,12 @@ def update_user(
     
     db.commit()
     db.refresh(db_user)
+<<<<<<< HEAD
     return db_user
+=======
+    logger.debug(f"User updated successfully: {db_user.email}")
+    return db_user 
+>>>>>>> 9cbd3427 (Update .gitignore to exclude unnecessary files)
 
 @router.delete("/{user_id}")
 async def delete_user(
@@ -163,8 +177,13 @@ async def delete_user(
 ):
     user_to_delete = db.query(models.User).filter(models.User.id == user_id).first()
     if user_to_delete is None:
+        logger.error("Delete failed: User not found")
         raise HTTPException(status_code=404, detail="User not found")
     
     db.delete(user_to_delete)
     db.commit()
+<<<<<<< HEAD
+=======
+    logger.debug(f"User deleted successfully: {user_id}")
+>>>>>>> 9cbd3427 (Update .gitignore to exclude unnecessary files)
     return {"message": "User deleted successfully"}
