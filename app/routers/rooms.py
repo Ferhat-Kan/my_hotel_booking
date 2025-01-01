@@ -32,14 +32,9 @@ def create_room(room: RoomCreate, db: Session = Depends(get_db)):
     return db_room
 
 @router.get("/", response_model=List[Room])
-def read_rooms(
-    skip: int = 0, 
-    limit: int = 100, 
-    hotel_id: Optional[int] = None,
-    db: Session = Depends(get_db)
-):
+def read_rooms(hotel_id: Optional[int] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     query = db.query(models.Room)
-    if hotel_id:
+    if hotel_id is not None:
         query = query.filter(models.Room.hotel_id == hotel_id)
     rooms = query.offset(skip).limit(limit).all()
     return rooms

@@ -30,8 +30,8 @@ const PaymentForm = () => {
     });
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         try {
             const paymentData = {
                 booking_id: bookingId,
@@ -40,9 +40,11 @@ const PaymentForm = () => {
                 status: 'pending'
             };
 
-            await api.createPayment(paymentData);
+            const response = await api.createPayment(paymentData);
+            console.log(response.data.message);
             navigate('/bookings');
         } catch (error) {
+            console.error('Payment failed:', error);
             setError('Payment failed. Please try again.');
         }
     };

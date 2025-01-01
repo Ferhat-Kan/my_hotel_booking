@@ -7,7 +7,7 @@ export const api = {
     
     getHotels: (criteria) => axios.get(`${API_URL}/hotels`, { params: criteria }),
     getHotelById: (id) => axios.get(`${API_URL}/hotels/${id}`),
-    getRooms: (hotelId) => axios.get(`${API_URL}/rooms`, { params: { hotel_id: hotelId } }),
+    getRooms: (hotelId, skip = 0, limit = 100) => axios.get(`${API_URL}/rooms`, { params: { hotel_id: hotelId, skip, limit } }),
     createBooking: (bookingData) => axios.post(`${API_URL}/bookings`, bookingData),
     getBookings: () => axios.get(`${API_URL}/bookings`),
     createPayment: (paymentData) => axios.post(`${API_URL}/payments`, paymentData),

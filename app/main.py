@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from .routers import (
     users,      # Kullanıcı yönetimi
     hotels,     # Otel yönetimi
@@ -9,7 +11,6 @@ from .routers import (
 )
 from . import models
 from .database import engine
-from fastapi.middleware.cors import CORSMiddleware
 
 # Create FastAPI instance
 app = FastAPI(
@@ -17,8 +18,6 @@ app = FastAPI(
     description="A simple hotel booking API",
     version="1.0.0"
 )
-
-
 
 # CORS middleware ayarı
 app.add_middleware(
@@ -28,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"],  # Herhangi bir HTTP metoduna izin verir
     allow_headers=["*"],  # Herhangi bir header'a izin verir
 )
+
+# Statik dosyaları sunmak için
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)

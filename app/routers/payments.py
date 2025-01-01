@@ -78,3 +78,8 @@ def complete_payment(payment_id: int, db: Session = Depends(get_db)):
     
     db.commit()
     return {"message": "Payment completed successfully"} 
+
+@router.post("/payments")
+def create_payment(payment_data: PaymentCreate, db: Session = Depends(get_db)):
+    # Ödeme işlemi mantığı burada
+    return {"message": "Payment successful"} 

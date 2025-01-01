@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Grid } from '@mui/material';
+import { api } from '../services/api';
 
 const SearchBar = ({ onSearch }) => {
     const [searchCriteria, setSearchCriteria] = useState({
@@ -15,8 +16,13 @@ const SearchBar = ({ onSearch }) => {
         setSearchCriteria({ ...searchCriteria, [name]: value });
     };
 
-    const handleSearch = () => {
-        onSearch(searchCriteria);
+    const handleSearch = async () => {
+        try {
+            const response = await api.getHotels({ location: searchCriteria.location });
+            onSearch(response.data);
+        } catch (error) {
+            console.error('Error searching hotels:', error);
+        }
     };
 
     return (

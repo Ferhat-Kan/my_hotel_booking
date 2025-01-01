@@ -6,7 +6,7 @@ const Navigation = () => {
     const navigate = useNavigate();
 
     return (
-        <AppBar position="static">
+        <AppBar position="fixed">
             <Toolbar>
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
                     My Application
