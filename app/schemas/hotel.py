@@ -18,3 +18,6 @@ class Hotel(HotelBase):
 
     class Config:
         orm_mode = True 
+
+class HotelBatchCreate(BaseModel):
+    hotels: List[HotelCreate] 

@@ -49,6 +49,24 @@ const PaymentForm = () => {
         }
     };
 
+    const handlePayment = async () => {
+        const paymentData = {
+            booking_id: bookingId,
+            amount: amount,
+            payment_method: formData.payment_method
+        };
+        try {
+            const response = await api.createPayment(paymentData);
+            if (response.status === 200) {
+                alert('Payment successful! Your booking is confirmed.');
+                navigate('/bookings');
+            }
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            alert('Payment failed. Please try again.');
+        }
+    };
+
     return (
         <Paper elevation={3} sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
             <Typography variant="h4" gutterBottom>

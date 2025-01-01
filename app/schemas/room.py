@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from decimal import Decimal
 
 class RoomBase(BaseModel):
@@ -19,3 +19,6 @@ class Room(RoomBase):
 
     class Config:
         orm_mode = True 
+
+class RoomBatchCreate(BaseModel):
+    rooms: List[RoomCreate] 
