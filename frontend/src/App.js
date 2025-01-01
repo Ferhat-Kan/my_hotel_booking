@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navigation from './components/Navigation';
 import { Container } from '@mui/material';
+import Navigation from './components/Navigation';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import HotelList from './components/HotelList';

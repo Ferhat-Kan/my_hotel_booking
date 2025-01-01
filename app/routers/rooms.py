@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from ..database import SessionLocal
 from .. import models
-from ..schemas.room import Room, RoomCreate
+from ..schemas.room import Room, RoomCreate, RoomBatchCreate
 
 router = APIRouter(
     prefix="/rooms",
@@ -73,4 +73,16 @@ def delete_room(room_id: int, db: Session = Depends(get_db)):
     
     db.delete(db_room)
     db.commit()
-    return {"message": "Room deleted successfully"} 
+    return {"message": "Room deleted successfully"}
+
+@router.post("/batch", response_model=List[Room], status_code=status.HTTP_201_CREATED)
+def create_rooms_batch(rooms: RoomBatchCreate, db: Session = Depends(get_db)):
+    db_rooms = []
+    for room_data in rooms.rooms:
+        db_room = models.Room(**room_data.dict())
+        db.add(db_room)
+        db_rooms.append(db_room)
+    db.commit()
+    for db_room in db_rooms:
+        db.refresh(db_room)
+    return db_rooms 

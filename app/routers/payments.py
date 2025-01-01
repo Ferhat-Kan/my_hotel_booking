@@ -19,26 +19,19 @@ def get_db():
 
 @router.post("/", response_model=Payment)
 def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
-    # Check if booking exists
+    # Simulate payment processing logic
+    payment_successful = process_payment(payment)  # Replace with actual payment logic
+
     booking = db.query(models.Booking).filter(models.Booking.id == payment.booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
-    
-    # Allow payment creation without a specific method
-    if not payment.payment_method:
-        payment.payment_method = "none"  # Default value or logic to handle no payment method
-    
-    # Create payment
-    db_payment = models.Payment(**payment.dict())
-    db.add(db_payment)
-    
-    # Update booking status if payment is completed
-    if payment.status == "completed":
+
+    if payment_successful:
         booking.status = "confirmed"
-    
+    else:
+        booking.status = "payment failed"
     db.commit()
-    db.refresh(db_payment)
-    return db_payment
+    return payment
 
 @router.get("/", response_model=List[Payment])
 def read_payments(
@@ -83,3 +76,19 @@ def complete_payment(payment_id: int, db: Session = Depends(get_db)):
 def create_payment(payment_data: PaymentCreate, db: Session = Depends(get_db)):
     # Ödeme işlemi mantığı burada
     return {"message": "Payment successful"} 
+
+@router.post("/complete", response_model=Payment)
+def complete_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
+    # Simulate payment processing logic
+    payment_successful = process_payment(payment)  # Replace with actual payment logic
+
+    booking = db.query(models.Booking).filter(models.Booking.id == payment.booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    if payment_successful:
+        booking.status = "completed"
+    else:
+        booking.status = "cancelled"
+    db.commit()
+    return payment 
