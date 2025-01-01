@@ -24,3 +24,4 @@ __pycache__/
 
 # Coverage reports
 coverage/
+path/to/large-file

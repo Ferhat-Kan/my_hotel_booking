@@ -20,7 +20,7 @@ def get_db():
 @router.post("/", response_model=Payment)
 def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     # Simulate payment processing logic
-    payment_successful = process_payment(payment)  # Replace with actual payment logic
+    payment_successful = process_payment(payment)  # type: ignore # Replace with actual payment logic
 
     booking = db.query(models.Booking).filter(models.Booking.id == payment.booking_id).first()
     if not booking:
@@ -80,7 +80,7 @@ def create_payment(payment_data: PaymentCreate, db: Session = Depends(get_db)):
 @router.post("/complete", response_model=Payment)
 def complete_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     # Simulate payment processing logic
-    payment_successful = process_payment(payment)  # Replace with actual payment logic
+    payment_successful = process_payment(payment)  # type: ignore # Replace with actual payment logic
 
     booking = db.query(models.Booking).filter(models.Booking.id == payment.booking_id).first()
     if not booking:
