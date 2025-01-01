@@ -22,12 +22,12 @@ const LandingPage = () => {
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/login')} sx={{ mr: 1 }}>
+                {/* <Button variant="contained" color="primary" onClick={() => navigate('/login')} sx={{ mr: 1 }}>
                     Login
                 </Button>
                 <Button variant="outlined" color="primary" onClick={() => navigate('/register')}>
                     Register
-                </Button>
+                </Button> */}
             </Box>
             <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
                 <Typography variant="h3" align="center" gutterBottom>

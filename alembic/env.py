@@ -24,9 +24,22 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
+<<<<<<< HEAD
             connection=connection,
             target_metadata=target_metadata
+=======
+            connection=connection, target_metadata=target_metadata
+>>>>>>> 8dfde2ac (Resolve merge conflicts)
         )
 
         with context.begin_transaction():
             context.run_migrations()
+<<<<<<< HEAD
+=======
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+>>>>>>> 8dfde2ac (Resolve merge conflicts)

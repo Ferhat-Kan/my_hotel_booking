@@ -11,6 +11,7 @@ class Room(Base):
     room_type = Column(String(50))
     price_per_night = Column(Float)
     is_available = Column(Boolean, default=True)
+    image_url = Column(String)
     
     hotel = relationship("Hotel", back_populates="rooms")
     bookings = relationship("Booking", back_populates="room")

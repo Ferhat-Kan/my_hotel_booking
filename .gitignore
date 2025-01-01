@@ -1,9 +1,14 @@
 # Örnek .gitignore
 node_modules/
-*.log
-*.tmp
-dist/
-build/
-.vscode/
-.DS_Store
+
+# Python virtual environment
+venv/
+
+# Environment variables
 .env
+
+# Pycache
+__pycache__/
+
+# Log files
+*.log

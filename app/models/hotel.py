@@ -10,5 +10,6 @@ class Hotel(Base):
     location = Column(String(200))
     rating = Column(Float)
     description = Column(String(500))
+    image_url = Column(String, nullable=True)
     
     rooms = relationship("Room", back_populates="hotel")

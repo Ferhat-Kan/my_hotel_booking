@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { API_URL } from '../config';
 
 const HotelList = () => {
     const [hotels, setHotels] = useState([]);
@@ -41,7 +42,7 @@ const HotelList = () => {
                             <CardMedia
                                 component="img"
                                 height="200"
-                                image={`https://source.unsplash.com/random/400x200/?hotel&${hotel.id}`}
+                                image={hotel.image_url ? `${API_URL}/${hotel.image_url}` : 'default_image_url.jpg'}
                                 alt={hotel.name}
                             />
                             <CardContent>

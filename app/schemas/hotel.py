@@ -5,8 +5,9 @@ from .room import Room
 class HotelBase(BaseModel):
     name: str
     location: str
-    rating: float
+    rating: int
     description: str
+    image_url: Optional[str] = None
 
 class HotelCreate(HotelBase):
     pass
