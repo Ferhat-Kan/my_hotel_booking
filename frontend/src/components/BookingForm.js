@@ -76,6 +76,7 @@ const BookingForm = () => {
             }
         } catch (error) {
             console.error("Error creating booking:", error);
+            setError("Failed to create booking. Please try again.");
         }
     };
 
@@ -117,7 +118,7 @@ const BookingForm = () => {
                                     label="Check-in Date"
                                     value={formData.check_in_date}
                                     onChange={(date) => handleDateChange('check_in_date', date)}
-                                    renderInput={(params) => <TextField {...params} fullWidth />}
+                                    textField={(params) => <TextField {...params} fullWidth />}
                                     minDate={new Date()}
                                 />
                             </Grid>
@@ -127,7 +128,7 @@ const BookingForm = () => {
                                     label="Check-out Date"
                                     value={formData.check_out_date}
                                     onChange={(date) => handleDateChange('check_out_date', date)}
-                                    renderInput={(params) => <TextField {...params} fullWidth />}
+                                    textField={(params) => <TextField {...params} fullWidth />}
                                     minDate={formData.check_in_date || new Date()}
                                 />
                             </Grid>

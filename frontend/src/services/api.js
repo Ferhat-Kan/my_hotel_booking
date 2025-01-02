@@ -1,19 +1,27 @@
 import axios from 'axios';
+import { API_URL } from '../config';
 
-const API_URL = 'http://localhost:8000'; // Backend API URL'nizi kontrol edin
+const apiClient = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
 
-// Axios ile API çağrıları için bir yapı oluşturuyoruz
+// Define API functions
 export const api = {
-    
-    getHotels: (criteria) => axios.get(`${API_URL}/hotels`, { params: criteria }),
-    getHotelById: (id) => axios.get(`${API_URL}/hotels/${id}`),
-    getRooms: (hotelId, skip = 0, limit = 100) => axios.get(`${API_URL}/rooms`, { params: { hotel_id: hotelId, skip, limit } }),
-    createBooking: (bookingData) => axios.post(`${API_URL}/bookings`, bookingData),
-    getBookings: () => axios.get(`${API_URL}/bookings`),
-    createPayment: (paymentData) => axios.post(`${API_URL}/payments`, paymentData),
-    getComments: (bookingId) => axios.get(`${API_URL}/comments`, { params: { booking_id: bookingId } }),
-    createComment: (commentData) => axios.post(`${API_URL}/comments`, commentData),
-    getUsers: () => axios.get(`${API_URL}/users`),
-    register: (userData) => axios.post(`${API_URL}/users/register`, userData),
-    login: (formData) => axios.post(`${API_URL}/users/login`, formData)
-}; 
+    createBooking: (bookingData) => apiClient.post('/bookings', bookingData),
+    getBookings: () => apiClient.get('/bookings'),
+    // Add other API requests here
+    getHotels: () => apiClient.get('/hotels'),
+    getHotelById: (id) => apiClient.get(`/hotels/${id}`),
+    getRooms: (hotelId, skip = 0, limit = 100) => apiClient.get('/rooms', { params: { hotel_id: hotelId, skip, limit } }),
+    createPayment: (paymentData) => apiClient.post('/payments', paymentData),
+    getComments: (bookingId) => apiClient.get('/comments', { params: { booking_id: bookingId } }),
+    createComment: (commentData) => apiClient.post('/comments', commentData),
+    getUsers: () => apiClient.get('/users'),
+    register: (userData) => apiClient.post('/users/register', userData),
+    login: (formData) => apiClient.post('/users/login', formData)
+};
+
+export default api; 

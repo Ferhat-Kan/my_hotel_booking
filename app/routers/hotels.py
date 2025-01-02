@@ -108,3 +108,8 @@ def create_hotels_batch(hotels: HotelBatchCreate, db: Session = Depends(get_db))
     for db_hotel in db_hotels:
         db.refresh(db_hotel)
     return db_hotels
+
+@router.get("/", response_model=List[Hotel])
+def read_hotels(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    hotels = db.query(models.Hotel).offset(skip).limit(limit).all()
+    return hotels

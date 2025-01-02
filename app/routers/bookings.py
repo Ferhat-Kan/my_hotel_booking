@@ -38,7 +38,18 @@ def read_booking(booking_id: int, db: Session = Depends(get_db)):
     booking = db.query(models.Booking).filter(models.Booking.id == booking_id).first()
     if booking is None:
         raise HTTPException(status_code=404, detail="Booking not found")
-    return booking
+
+    # Convert dates to strings
+    booking_data = {
+        "id": booking.id,
+        "guest_name": booking.guest_name,
+        "check_in_date": booking.check_in_date.strftime("%Y-%m-%d"),
+        "check_out_date": booking.check_out_date.strftime("%Y-%m-%d"),
+        "room_id": booking.room_id,
+        "status": booking.status
+    }
+
+    return booking_data
 
 @router.post("/", response_model=Booking, status_code=status.HTTP_201_CREATED)
 def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
