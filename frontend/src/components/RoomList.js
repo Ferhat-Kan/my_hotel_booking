@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    Grid, 
-    Card, 
-    CardContent, 
-    CardMedia, 
-    Typography, 
-    Button, 
-    Box,
-    Chip
-} from '@mui/material';
+import { Grid, Card, CardContent, CardMedia, Typography, Button, Box, Chip } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import './RoomList.css';
+import { API_URL } from '../config';
 
 const RoomList = () => {
     const [rooms, setRooms] = useState([]);
@@ -56,7 +47,7 @@ const RoomList = () => {
                             <CardMedia
                                 component="img"
                                 height="200"
-                                image={`https://source.unsplash.com/random/400x200/?hotel-room&${room.id}`}
+                                image={room.image_url ? `${API_URL}/${room.image_url}` : 'default_image_url.jpg'}
                                 alt={room.room_number}
                             />
                             <CardContent>
@@ -92,4 +83,4 @@ const RoomList = () => {
     );
 };
 
-export default RoomList; 
+export default RoomList;

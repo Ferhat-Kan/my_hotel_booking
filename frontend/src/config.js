@@ -1,1 +1,1 @@
-export const API_URL = 'http://localhost:8000'; // Backend API URL'nizi kontrol edin 
+export const API_URL = 'http://localhost:8000'; // FastAPI sunucunuzun doğru URL'si 
