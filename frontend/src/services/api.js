@@ -9,8 +9,17 @@ const apiClient = axios.create({
 });
 
 // Define API functions
+export const createBooking = async (bookingData) => {
+    try {
+        const response = await apiClient.post('/bookings', bookingData);
+        return response.data;
+    } catch (error) {
+        console.error("Error creating booking:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 export const api = {
-    createBooking: (bookingData) => apiClient.post('/bookings', bookingData),
     getBookings: () => apiClient.get('/bookings'),
     // Add other API requests here
     getHotels: () => apiClient.get('/hotels'),

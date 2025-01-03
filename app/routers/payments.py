@@ -19,19 +19,15 @@ def get_db():
 
 @router.post("/", response_model=Payment)
 def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
-    # Simulate payment processing logic
-    payment_successful = process_payment(payment)  # type: ignore # Replace with actual payment logic
-
-    booking = db.query(models.Booking).filter(models.Booking.id == payment.booking_id).first()
-    if not booking:
-        raise HTTPException(status_code=404, detail="Booking not found")
-
-    if payment_successful:
-        booking.status = "confirmed"
-    else:
-        booking.status = "payment failed"
-    db.commit()
-    return payment
+    try:
+        db_payment = Payment(**payment.dict())
+        db.add(db_payment)
+        db.commit()
+        db.refresh(db_payment)
+        return db_payment
+    except Exception as e:
+        print(f"Error creating payment: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.get("/", response_model=List[Payment])
 def read_payments(
