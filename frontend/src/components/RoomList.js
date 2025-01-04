@@ -36,7 +36,7 @@ const RoomList = () => {
     if (!hotel) return null;
 
     return (
-        <Box>
+        <Box style={{ marginTop: '2cm' }}>
             <Typography variant="h4" gutterBottom>
                 {hotel.name} - Rooms
             </Typography>

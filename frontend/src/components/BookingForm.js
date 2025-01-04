@@ -13,7 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const BookingForm = () => {
   const location = useLocation();
-  const { roomId, hotelName, roomPrice } = location.state || {}; // Retrieve roomId from state
+  const { roomId, hotelName, roomPrice } = location.state || {};
   const [formData, setFormData] = useState({
     guest_name: "",
     check_in_date: "",
@@ -21,11 +21,10 @@ const BookingForm = () => {
   });
 
   const [responseMessage, setResponseMessage] = useState("");
-  const [responseType, setResponseType] = useState(""); // 'success' or 'error'
+  const [responseType, setResponseType] = useState("");
   const navigate = useNavigate();
 
-  const userId = 1; // Example user ID
-  const status = "pending"; // Default status
+  const userId = 1; // Simulated user ID for testing purposes
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,57 +33,66 @@ const BookingForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Format the date to 'yyyy-mm-dd'
+    const formattedCheckInDate = new Date(formData.check_in_date)
+      .toISOString()
+      .split("T")[0];
+    const formattedCheckOutDate = new Date(formData.check_out_date)
+      .toISOString()
+      .split("T")[0];
+
+    const bookingData = {
+      user_id: userId,
+      room_id: roomId,
+      guest_name: formData.guest_name,
+      check_in_date: formattedCheckInDate,
+      check_out_date: formattedCheckOutDate,
+    };
+
+    console.log("Booking Data:", bookingData); // Log the data being sent to the server
+
     try {
-      const bookingData = {
-        ...formData,
-        user_id: userId,
-        room_id: roomId, // Use roomId from state
-        status: status,
-      };
-      console.log("Booking Data:", bookingData);
-      const response = await axios.post("http://127.0.0.1:8000/bookings", bookingData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/bookings",
+        bookingData,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      console.log("Booking Response:", response.data); // Log server response
       setResponseMessage("Booking successfully created!");
       setResponseType("success");
-      console.log("Response:", response.data);
 
-      // Navigate to payment form after successful booking
       setTimeout(() => {
-        navigate("/payment/new", { state: { bookingId: response.data.id, amount: calculateTotalAmount() } });
-      }, 2000); // Redirect after 2 seconds
+        navigate("/payment/new", {
+          state: { bookingId: response.data.id, amount: calculateTotalAmount() },
+        });
+      }, 2000);
     } catch (error) {
+      console.error("Booking Error:", error); // Log error details
       let errorMessage = "Failed to create booking.";
       if (error.response) {
-        console.error("Error Response:", error.response.data);
-        switch (error.response.status) {
-          case 404:
-            errorMessage = "Room not found.";
-            break;
-          case 400:
-            errorMessage = error.response.data.detail || "Invalid booking details.";
-            break;
-          default:
-            errorMessage = "An unexpected error occurred.";
-        }
+        if (error.response.status === 404) errorMessage = "Room not found.";
+        else if (error.response.status === 400)
+          errorMessage = error.response.data.detail || "Invalid booking details.";
+        else errorMessage = "An unexpected error occurred.";
       }
       setResponseMessage(errorMessage);
       setResponseType("error");
-      console.error("Error:", error);
     }
   };
 
   const calculateTotalAmount = () => {
-    if (!formData.check_in_date || !formData.check_out_date) {
-      return 0; // Return 0 if any required field is missing
-    }
+    if (!formData.check_in_date || !formData.check_out_date || !roomPrice)
+      return 0;
     const checkInDate = new Date(formData.check_in_date);
     const checkOutDate = new Date(formData.check_out_date);
-    const diffTime = Math.abs(checkOutDate - checkInDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays * roomPrice; // Use roomPrice from state
+    const diffDays = Math.ceil(
+      (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
+    );
+    return diffDays * roomPrice;
   };
 
   return (
@@ -97,7 +105,6 @@ const BookingForm = () => {
           <Box mb={2}>
             <TextField
               fullWidth
-              type="text"
               label="Guest Name"
               name="guest_name"
               value={formData.guest_name}

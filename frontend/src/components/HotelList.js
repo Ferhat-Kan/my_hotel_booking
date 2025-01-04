@@ -42,7 +42,7 @@ const HotelList = () => {
                             <CardMedia
                                 component="img"
                                 height="200"
-                                image={hotel.image_url ? `${API_URL}/${hotel.image_url}` : 'default_image_url.jpg'}
+                                image={hotel.image_url}
                                 alt={hotel.name}
                             />
                             <CardContent>

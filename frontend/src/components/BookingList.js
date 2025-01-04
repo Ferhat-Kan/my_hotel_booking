@@ -14,6 +14,8 @@ const BookingList = () => {
                 setBookings(response.data);
             } catch (error) {
                 console.error('Error fetching bookings:', error);
+                setResponseMessage("Failed to load bookings.");
+                setResponseType("error");
             }
         };
 
@@ -25,10 +27,13 @@ const BookingList = () => {
             const response = await axios.put(`http://127.0.0.1:8000/bookings/${bookingId}/cancel`);
             setResponseMessage("Booking successfully cancelled!");
             setResponseType("success");
-            // Update the booking list to reflect the cancellation
-            setBookings(bookings.map(booking => 
-                booking.id === bookingId ? { ...booking, status: 'cancelled' } : booking
-            ));
+            
+            // Update the booking list after cancellation
+            setBookings(prevBookings => 
+                prevBookings.map(booking => 
+                    booking.id === bookingId ? { ...booking, status: 'cancelled' } : booking
+                )
+            );
         } catch (error) {
             setResponseMessage("Failed to cancel booking.");
             setResponseType("error");
@@ -46,26 +51,30 @@ const BookingList = () => {
                     {responseMessage}
                 </Alert>
             )}
-            {bookings.map((booking) => (
-                <Box key={booking.id} sx={{ mb: 2, p: 2, border: '1px solid #ccc' }}>
-                    <Typography variant="h6">Booking ID: {booking.id}</Typography>
-                    <Typography>Guest Name: {booking.guest_name}</Typography>
-                    <Typography>Check-in Date: {booking.check_in_date}</Typography>
-                    <Typography>Check-out Date: {booking.check_out_date}</Typography>
-                    <Typography>Status: {booking.status}</Typography>
-                    {booking.status !== 'cancelled' && (
-                        <Button 
-                            variant="contained" 
-                            color="secondary" 
-                            onClick={() => handleCancelBooking(booking.id)}
-                        >
-                            Cancel Booking
-                        </Button>
-                    )}
-                </Box>
-            ))}
+            {bookings.length === 0 ? (
+                <Typography>No bookings available.</Typography>
+            ) : (
+                bookings.map((booking) => (
+                    <Box key={booking.id} sx={{ mb: 2, p: 2, border: '1px solid #ccc' }}>
+                        <Typography variant="h6">Booking ID: {booking.id}</Typography>
+                        <Typography>Guest Name: {booking.guest_name}</Typography>
+                        <Typography>Check-in Date: {booking.check_in_date}</Typography>
+                        <Typography>Check-out Date: {booking.check_out_date}</Typography>
+                        <Typography>Status: {booking.status}</Typography>
+                        {booking.status !== 'cancelled' && (
+                            <Button 
+                                variant="contained" 
+                                color="secondary" 
+                                onClick={() => handleCancelBooking(booking.id)}
+                            >
+                                Cancel Booking
+                            </Button>
+                        )}
+                    </Box>
+                ))
+            )}
         </Container>
     );
 };
 
-export default BookingList; 
+export default BookingList;
