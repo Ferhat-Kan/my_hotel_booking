@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 import enum
 from app.database import Base  # Base import edilmesi önemli
+from app.models.payment import Payment
 
 # Booking Status Enum
 class BookingStatus(str, enum.Enum):

@@ -9,9 +9,11 @@ import {
   Paper,
   Alert,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const BookingForm = () => {
+  const location = useLocation();
+  const { roomId, hotelName, roomPrice } = location.state || {}; // Retrieve roomId from state
   const [formData, setFormData] = useState({
     guest_name: "",
     check_in_date: "",
@@ -22,9 +24,7 @@ const BookingForm = () => {
   const [responseType, setResponseType] = useState(""); // 'success' or 'error'
   const navigate = useNavigate();
 
-  // Assume these values are fetched or determined elsewhere in your app
   const userId = 1; // Example user ID
-  const roomId = 1; // Correct room ID
   const status = "pending"; // Default status
 
   const handleChange = (e) => {
@@ -38,7 +38,7 @@ const BookingForm = () => {
       const bookingData = {
         ...formData,
         user_id: userId,
-        room_id: roomId,
+        room_id: roomId, // Use roomId from state
         status: status,
       };
       console.log("Booking Data:", bookingData);
@@ -84,14 +84,14 @@ const BookingForm = () => {
     const checkOutDate = new Date(formData.check_out_date);
     const diffTime = Math.abs(checkOutDate - checkInDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays * 100; // Example calculation, replace 100 with actual room price if needed
+    return diffDays * roomPrice; // Use roomPrice from state
   };
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h4" gutterBottom>
-          Create Booking
+          Create Booking for {hotelName}
         </Typography>
         <form onSubmit={handleSubmit}>
           <Box mb={2}>

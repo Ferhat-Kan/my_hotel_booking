@@ -7,7 +7,7 @@ from .. import models
 from ..schemas.user import User, UserCreate, UserLogin, Token
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import JWTError, jwt # type: ignore
 import os
 import logging
 

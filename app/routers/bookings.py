@@ -50,16 +50,16 @@ def read_booking(booking_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=Booking)
 def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
     try:
-        # Oda kontrolü
+        # Check if room exists
         room = db.query(models.Room).filter(models.Room.id == booking.room_id).first()
         if not room:
             raise HTTPException(status_code=404, detail="Room not found")
 
-        # Oda uygunluk kontrolü
+        # Check room availability
         if not room.is_available:
             raise HTTPException(status_code=400, detail="Room is not available")
 
-        # Tarih doğrulama
+        # Validate dates
         if booking.check_in_date >= booking.check_out_date:
             raise HTTPException(
                 status_code=400, 
@@ -72,7 +72,7 @@ def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
                 detail="Check-in date cannot be in the past"
             )
 
-        # Çakışan rezervasyon kontrolü
+        # Check for overlapping bookings
         overlapping_booking = db.query(models.Booking).filter(
             models.Booking.room_id == booking.room_id,
             models.Booking.check_out_date > booking.check_in_date,
@@ -86,7 +86,7 @@ def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
                 detail="Room is already booked for these dates"
             )
 
-        # Rezervasyon oluşturma
+        # Create booking
         db_booking = models.Booking(**booking.dict())
         db.add(db_booking)
         db.commit()
