@@ -1,4 +1,4 @@
-from pydantic import BaseModel, root_validator, ValidationError
+from pydantic import BaseModel, root_validator
 from typing import Union
 import datetime
 from app.models.booking import BookingStatus

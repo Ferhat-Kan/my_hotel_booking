@@ -57,15 +57,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     try:
         logger.debug(f"Decoding token: {token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        logger.debug(f"Token payload email: {email}")
-        if email is None:
+        userId: int = int(payload.get("sub"))
+        logger.debug(f"Token payload user id: {userId}")
+        if userId is None:
             raise credentials_exception
     except JWTError as e:
         logger.error(f"Token decode error: {e}")
         raise credentials_exception
 
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(models.User).filter(models.User.id == userId).first()
     logger.debug(f"Found user: {user.email}, is_admin: {user.is_admin}")
     if user is None:
         raise credentials_exception
@@ -103,14 +103,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    if not verify_password(form_data.password, user.hashed_password):
+    if not user and not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -118,7 +111,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         )
     
     logger.debug(f"User logged in: {user.email}, is_admin: {user.is_admin}")
-    access_token = create_access_token(data={"sub": user.email})
+    access_token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/me", response_model=User)

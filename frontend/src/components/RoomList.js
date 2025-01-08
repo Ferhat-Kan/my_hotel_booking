@@ -47,7 +47,7 @@ const RoomList = () => {
                             <CardMedia
                                 component="img"
                                 height="200"
-                                image={room.image_url ? `${API_URL}/${room.image_url}` : 'default_image_url.jpg'}
+                                image={room.image_url || 'default_image_url.jpg'}
                                 alt={room.room_number}
                             />
                             <CardContent>

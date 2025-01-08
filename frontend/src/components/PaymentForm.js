@@ -37,7 +37,7 @@ const PaymentForm = () => {
                 booking_id: bookingId,
                 amount: amount,
                 payment_method: formData.payment_method,
-                status: 'pending'
+                status: 'PENDING'
             };
 
             const response = await api.createPayment(paymentData);

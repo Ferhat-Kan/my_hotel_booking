@@ -12,6 +12,9 @@ import BookingList from './components/BookingList';
 import CommentList from './components/CommentList';
 import UserList from './components/UserList';
 import LandingPage from './components/LandingPage';
+import CreateComment from './components/CreateComment';
+import ApproveComment from './components/ApproveComment';
+import commentService from './services/commentService';
 
 function App() {
     return (
@@ -29,6 +32,9 @@ function App() {
                     <Route path="/bookings" element={<BookingList />} />
                     <Route path="/comments/new/:bookingId" element={<CommentList />} />
                     <Route path="/users" element={<UserList />} />
+                    <Route path="/create-comment" element={<CreateComment />} />
+                    <Route path="/comments" element={<CommentList />} />
+                    <Route path="/approve-comment" element={<ApproveComment />} />
                 </Routes>
             </Container>
         </Router>

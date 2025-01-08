@@ -98,9 +98,9 @@ async def upload_room_image(room_id: int, file: UploadFile = File(...), db: Sess
     db.commit()
     return {"info": f"File '{file.filename}' uploaded successfully", "url": file_location}
 
-@router.get("/hotels/{hotel_id}/rooms", response_model=List[Room])
-def read_rooms(hotel_id: int, db: Session = Depends(get_db)):
-    rooms = db.query(models.Room).filter(models.Room.hotel_id == hotel_id).all()
-    if not rooms:
-        raise HTTPException(status_code=404, detail="Rooms not found")
-    return rooms
+# @router.get("/hotels/{hotel_id}/rooms", response_model=List[Room])
+# def read_rooms(hotel_id: int, db: Session = Depends(get_db)):
+#     rooms = db.query(models.Room).filter(models.Room.hotel_id == hotel_id).all()
+#     if not rooms:
+#         raise HTTPException(status_code=404, detail="Rooms not found")
+#     return rooms

@@ -6,6 +6,7 @@ from datetime import datetime
 from app.models.booking import BookingStatus
 from app.database import SessionLocal
 from app import models
+from app.routers.users import get_current_user
 from app.schemas.booking import Booking, BookingCreate
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
@@ -33,59 +34,54 @@ def read_booking(booking_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=Booking)
 def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
-    try:
-        # Oda kontrolü
-        print("Fetching room...")
-        room = db.query(models.Room).filter(models.Room.id == booking.room_id).first()
-        if not room:
-            print("Room not found")
-            raise HTTPException(status_code=404, detail="Room not found")
+    # Oda kontrolü
+    print("Fetching room...")
+    room = db.query(models.Room).filter(models.Room.id == booking.room_id).first()
+    if not room:
+        print("Room not found")
+        raise HTTPException(status_code=404, detail="Room not found")
 
-        # Oda uygunluk kontrolü
-        print(f"Checking room availability for room_id={booking.room_id}")
-        if not room.is_available:
-            raise HTTPException(status_code=400, detail="Room is not available")
+    # Oda uygunluk kontrolü
+    print(f"Checking room availability for room_id={booking.room_id}")
+    if not room.is_available:
+        raise HTTPException(status_code=400, detail="Room is not available")
 
-        # Tarih doğrulama
-        print(f"Validating dates: check_in_date={booking.check_in_date}, check_out_date={booking.check_out_date}")
-        if booking.check_in_date >= booking.check_out_date:
-            raise HTTPException(
-                status_code=400, 
-                detail="Check-in date must be before check-out date"
-            )
+    # Tarih doğrulama
+    print(f"Validating dates: check_in_date={booking.check_in_date}, check_out_date={booking.check_out_date}")
+    if booking.check_in_date >= booking.check_out_date:
+        raise HTTPException(
+            status_code=400, 
+            detail="Check-in date must be before check-out date"
+        )
 
-        if booking.check_in_date < datetime.today().date():
-            raise HTTPException(
-                status_code=400,
-                detail="Check-in date cannot be in the past"
-            )
+    if booking.check_in_date < datetime.today().date():
+        raise HTTPException(
+            status_code=400,
+            detail="Check-in date cannot be in the past"
+        )
 
-        # Çakışan rezervasyon kontrolü
-        print("Checking for overlapping bookings...")
-        overlapping_booking = db.query(models.Booking).filter(
-            models.Booking.room_id == booking.room_id,
-            models.Booking.check_out_date > booking.check_in_date,
-            models.Booking.check_in_date < booking.check_out_date,
-            models.Booking.status != BookingStatus.CANCELLED
-        ).first()
+    # Çakışan rezervasyon kontrolü
+    print("Checking for overlapping bookings...")
+    overlapping_dates = db.query(models.Booking).filter(
+        models.Booking.room_id == booking.room_id, 
+        models.Booking.check_out_date > booking.check_in_date,
+        models.Booking.check_in_date < booking.check_out_date,
+        models.Booking.status != BookingStatus.CANCELLED
+    ).first()
 
-        if overlapping_booking:
-            raise HTTPException(
-                status_code=400,
-                detail="Room is already booked for these dates"
-            )
+    if overlapping_dates:
+        raise HTTPException(
+            status_code=400,
+            detail="Room is already booked for these dates"
+        )
 
-        # Rezervasyon oluşturma
-        print("Creating booking...")
-        db_booking = models.Booking(**booking.dict())
-        db.add(db_booking)
-        db.commit()
-        db.refresh(db_booking)
-        return db_booking
-
-    except Exception as e:
-        print(f"Error during booking creation: {e}")  # Hata mesajını loglayın
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+    # Rezervasyon oluşturma
+    print("Creating booking...")
+    db_booking = models.Booking(**booking.dict())
+    db.add(db_booking)
+    db.commit()
+    db.refresh(db_booking)
+    return db_booking
 
 
 @router.put("/{booking_id}/cancel", response_model=Booking)
