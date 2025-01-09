@@ -7,3 +7,6 @@ build/
 .vscode/
 .DS_Store
 .env
+__pycache__
+
+my_hotel_booking/hotel_booking.db
