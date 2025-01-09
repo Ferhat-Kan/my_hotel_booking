@@ -6,7 +6,7 @@ class PaymentBase(BaseModel):
     booking_id: int
     amount: float
     payment_method: Literal["credit_card", "debit_card", "paypal"] = "credit_card"  # Varsayılan: "credit_card"
-    status: str = "pending"
+    status: str = "PENDING"
 
 class PaymentCreate(PaymentBase):
     id: Optional[int] = None

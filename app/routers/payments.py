@@ -4,7 +4,7 @@ from typing import List, Optional
 from ..database import SessionLocal
 from .. import models
 from ..schemas.payment import Payment, PaymentCreate
-from ..models.booking import Booking
+from ..models.booking import Booking, BookingStatus
 
 router = APIRouter(
     prefix="/payments",
@@ -21,7 +21,7 @@ def get_db():
 @router.post("/", response_model=Payment)
 def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     """
-    Creates a new payment entry and updates the booking status to "pending" if necessary.
+    Creates a new payment entry and updates the booking status to "PENDING" if necessary.
     """
     try:
         # Create a new payment
@@ -30,11 +30,11 @@ def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(db_payment)
 
-        # Update booking status to "pending" if not already "confirmed"
+        # Check booking status and update if necessary
         booking = db.query(Booking).filter(Booking.id == payment.booking_id).first()
-        if booking and booking.status != "confirmed":
-            booking.status = "pending"
-            db.commit()
+        if booking and booking.status != BookingStatus.CONFIRMED.value:
+            booking.status = "PENDING"
+            db.commit()  # Ensure commit after booking status update
 
         return db_payment
     except Exception as e:
@@ -76,17 +76,21 @@ def complete_payment(payment_id: int, db: Session = Depends(get_db)):
     if payment is None:
         raise HTTPException(status_code=404, detail="Payment not found")
 
-    if payment.status == "completed":
+    if payment.status == BookingStatus.COMPLETED.value:
         raise HTTPException(status_code=400, detail="Payment is already completed")
 
-    payment.status = "completed"
+    payment.status = BookingStatus.COMPLETED.value
 
     # Update booking status
     booking = db.query(models.Booking).filter(models.Booking.id == payment.booking_id).first()
     if booking:
-        booking.status = "confirmed"
+        booking.status = BookingStatus.CONFIRMED.value
+       
+    room = db.query(models.Room).filter(models.Room.id == booking.room_id).first() 
+    if room:
+        room.is_available = False
     
-    db.commit()
+    db.commit()  # Ensure commit after updating payment and booking
     return {"message": "Payment completed successfully"}
 
 @router.post("/process", response_model=Payment)
@@ -97,12 +101,14 @@ def process_and_complete_payment(payment_data: PaymentCreate, db: Session = Depe
     # Simulate payment processing logic
     payment_successful = True  # Replace with actual payment gateway logic
 
+    # Retrieve the booking
     booking = db.query(models.Booking).filter(models.Booking.id == payment_data.booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
 
+    # Update the booking status based on payment result
     if payment_successful:
-        booking.status = "confirmed"
+        booking.status = BookingStatus.CONFIRMED.value
     else:
         booking.status = "cancelled"
 
@@ -111,5 +117,8 @@ def process_and_complete_payment(payment_data: PaymentCreate, db: Session = Depe
     db.add(db_payment)
     db.commit()
     db.refresh(db_payment)
+
+    # Commit the booking status update
+    db.commit()  # Ensure commit after updating booking status
 
     return db_payment

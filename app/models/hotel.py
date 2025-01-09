@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import relationship
 from ..database import Base
 
@@ -11,5 +11,6 @@ class Hotel(Base):
     rating = Column(Float)
     description = Column(String(500))
     image_url = Column(String, nullable=True)
+    # manager_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     
     rooms = relationship("Room", back_populates="hotel")

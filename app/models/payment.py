@@ -11,6 +11,6 @@ class Payment(Base):
     amount = Column(Integer, nullable=False)
     payment_date = Column(DateTime, default=datetime.datetime.utcnow)
     payment_method = Column(String, nullable=False)
-    status = Column(String, default='pending')
+    status = Column(String, default='PENDING')
 
     booking = relationship("Booking", back_populates="payment")

@@ -1,55 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, List, ListItem, ListItemText } from '@mui/material';
-import { api } from '../services/api';
+import React, { useState, useEffect } from "react";
+import { fetchComments } from "../services/commentService";
 
 const CommentList = ({ bookingId }) => {
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchComments();
-    }, [bookingId]);
-
-    const fetchComments = async () => {
-        try {
-            const response = await api.getComments(bookingId);
-            setComments(response.data);
-        } catch (error) {
-            console.error('Error fetching comments:', error);
-        }
+  useEffect(() => {
+    const getComments = async () => {
+      try {
+        const data = await fetchComments(bookingId, 0, 10);
+        setComments(data);
+      } catch (err) {
+        console.error("Failed to fetch comments");
+      } finally {
+        setLoading(false);
+      }
     };
+    getComments();
+  }, [bookingId]);
 
-    const handleAddComment = async () => {
-        try {
-            await api.createComment({ booking_id: bookingId, content: newComment });
-            setNewComment('');
-            fetchComments();
-        } catch (error) {
-            console.error('Error adding comment:', error);
-        }
-    };
+  if (loading) return <p>Loading comments...</p>;
 
-    return (
-        <Box>
-            <Typography variant="h6">Comments</Typography>
-            <List>
-                {comments.map((comment) => (
-                    <ListItem key={comment.id}>
-                        <ListItemText primary={comment.content} />
-                    </ListItem>
-                ))}
-            </List>
-            <TextField
-                fullWidth
-                label="Add a comment"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-            />
-            <Button onClick={handleAddComment} variant="contained" sx={{ mt: 2 }}>
-                Submit
-            </Button>
-        </Box>
-    );
+  return (
+    <div>
+      <h2>Comments</h2>
+      {comments.length === 0 ? (
+        <p>No comments yet.</p>
+      ) : (
+        <ul>
+          {comments.map((comment) => (
+            <li key={comment.id}>
+              <p>{comment.content}</p>
+              <p>Rating: {comment.rating}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 };
 
-export default CommentList; 
+export default CommentList;
